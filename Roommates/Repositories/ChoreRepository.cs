@@ -115,8 +115,8 @@ namespace Roommates.Repositories
                 {
                     cmd.CommandText = @"SELECT chore.Id, chore.Name 
                                         FROM Chore
-                                        LEFT JOIN mateChore on chore.Id = mateChore.ChoreId
-                                        WHERE mateChore.Id IS NULL;";
+                                        LEFT JOIN roommateChore on chore.Id = roommateChore.ChoreId
+                                        WHERE roommateChore.Id IS NULL;";
 
                     SqlDataReader reader = cmd.ExecuteReader();
 
