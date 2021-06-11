@@ -11,6 +11,7 @@ namespace Roommates.Repositories
     public class ChoreRepository : BaseRepository
     {
         public ChoreRepository(string connectionString) : base(connectionString) { }
+
         /// <summary>
         ///  Get a list of all Chores in the database
         /// </summary>
@@ -22,6 +23,7 @@ namespace Roommates.Repositories
             //  interact with the database and we Close() them when we're finished.
             //  In C#, a "using" block ensures we correctly disconnect from a resource even if there is an error.
             //  For database connections, this means the connection will be properly closed.
+
             using (SqlConnection conn = Connection)
             {
                 // Note, we must Open() the connection, the "using" block doesn't do that for us.
@@ -98,6 +100,60 @@ namespace Roommates.Repositories
                     reader.Close();
 
                     return chore;
+                }
+            }
+        }
+
+        // Display the chores that arent attached to a Room Mate
+        public List<Chore> UnassignedChores()
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"SELECT chore.Id, chore.Name 
+                                        FROM Chore
+                                        LEFT JOIN mateChore on chore.Id = mateChore.ChoreId
+                                        WHERE mateChore.Id IS NULL;";
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    List<Chore> UnassignedChores = new List<Chore>();
+
+                    while (reader.Read())
+                    {
+                        Chore chore = new Chore
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            Name = reader.GetString(reader.GetOrdinal("Name")),
+                        };
+
+                        UnassignedChores.Add(chore);
+                    }
+
+                    reader.Close();
+                    return UnassignedChores;
+                }
+            }
+        }
+
+        // Now lets Assign those chores
+        public void AssignChore(int roommateId, int choreId)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"INSERT INTO RoommateChore (RoommateId, ChoreId)
+                                            VALUES (@roommateId, @choreId)";
+                    cmd.Parameters.AddWithValue("@roommateId", roommateId);
+                    cmd.Parameters.AddWithValue("@choreId", choreId);
+
+                    cmd.ExecuteNonQuery();
                 }
             }
         }

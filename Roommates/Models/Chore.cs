@@ -1,4 +1,6 @@
-﻿namespace Roommates.Models
+﻿using System;
+
+namespace Roommates.Models
 {
     // C# representation of the Chore table
     public class Chore

@@ -1,4 +1,6 @@
-﻿namespace Roommates.Models
+﻿using System;
+
+namespace Roommates.Models
 {
     // C# representation of the Roommate table
     public class Roommate
@@ -7,7 +9,7 @@
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public int RentPortion { get; set; }
-        //public DateTime MovedInDate { get; set; }
+        public DateTime MovedInDate { get; set; }
         public Room Room { get; set; }
     }
 }
