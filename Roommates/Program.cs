@@ -90,18 +90,6 @@ namespace Roommates
                         Console.ReadKey();
                         break;
 
-                    case ("Show all unassigned chores"):
-                        List<Chore> UnassignedChores = choreRepo.UnassignedChores();
-
-                        foreach(Chore chre in UnassignedChores)
-                        {
-                            Console.WriteLine($"Id: {chre.Id} - Chore: {chre.Name}");
-                        };
-
-                        Console.Write("Press any key to continue");
-                        Console.ReadKey();
-                        break;
-
                     case ("Add a chore"):
                         Console.Write("Chore name: ");
                         string choreName = Console.ReadLine();
@@ -114,6 +102,58 @@ namespace Roommates
                         choreRepo.Insert(choreToAdd);
 
                         Console.WriteLine($"{choreToAdd.Name} has been added and assigned an Id of {choreToAdd.Id}");
+                        Console.Write("Press any key to continue");
+                        Console.ReadKey();
+                        break;
+
+                    case ("Show all unassigned chores"):
+                        List<Chore> UnassignedChores = choreRepo.UnassignedChores();
+
+                        foreach(Chore chre in UnassignedChores)
+                        {
+                            Console.WriteLine($"Id: {chre.Id} - Chore: {chre.Name}");
+                        };
+
+                        Console.Write("Press any key to continue");
+                        Console.ReadKey();
+                        break;
+
+                    case ("Assign a chore"):
+                        List<Chore> assignChores = choreRepo.GetAll();
+                        List<Roommate> roomatesChore = roommateRepo.GetAll();
+                        // A way for the user to see all the chores before assigning them.
+                        Console.WriteLine("Chores to be Assigned:");
+                        Console.WriteLine("----------------------");
+                        foreach (Chore chre in assignChores)
+                        {
+                            Console.WriteLine($"{chre.Id} - {chre.Name}");
+                        }
+
+                        // Prompt for user to assign a chore
+                        Console.WriteLine();
+                        Console.WriteLine("Which chore would you like to assign?:");
+                        int choreAssignment = int.Parse(Console.ReadLine());
+
+                        // A list of the RoomMates for a user to asign chores to 
+                        Console.WriteLine("Roommates to be Assigned Chores:");
+                        Console.WriteLine("--------------------------------");
+                        foreach (Roommate rmmte in roomatesChore)
+                        {
+                            Console.WriteLine($"{rmmte.Id} - {rmmte.FirstName} {rmmte.LastName}");
+                        }
+
+                        // Prompt for user to assign a roomMate to a chore
+                        Console.WriteLine();
+                        Console.WriteLine("Which roomate should do this chore?:");
+                        int assignedMate = int.Parse(Console.ReadLine());
+
+                        choreRepo.AssignChore(choreAssignment, assignedMate);
+
+                        Roommate mate = roommateRepo.GetById(assignedMate);
+                        Chore task = choreRepo.GetById(choreAssignment);
+
+                        Console.WriteLine($"The chore of {task.Name} was assigned to {mate.FirstName}");
+
                         Console.Write("Press any key to continue");
                         Console.ReadKey();
                         break;
@@ -153,6 +193,7 @@ namespace Roommates
                 "Show all chores",
                 "Search for a chore",
                 "Show all unassigned chores",
+                "Assign a chore",
                 "Add a chore",
                 // ROOMMATES
                 "Select a roommate",
