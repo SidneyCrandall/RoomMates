@@ -2,6 +2,7 @@
 using Roommates.Repositories;
 using System;
 using System.Collections.Generic;
+using.Linq;
 
 namespace Roommates
 {
@@ -63,6 +64,59 @@ namespace Roommates
                         roomRepo.Insert(roomToAdd);
 
                         Console.WriteLine($"{roomToAdd.Name} has been added and assigned an Id of {roomToAdd.Id}");
+                        Console.Write("Press any key to continue");
+                        Console.ReadKey();
+                        break;
+
+                    case ("Update a room"):
+                        List<Room> roomOptions = roomRepo.GetAll();
+                        foreach (Room r in roomOptions)
+                        {
+                            Console.WriteLine($"{r.Id} - {r.Name} Max Occupancy({r.MaxOccupancy})");
+                        }
+
+                        Console.Write("Which room would you like to update? ");
+                        int selectedRoomId = int.Parse(Console.ReadLine());
+                        Room selectedRoom = roomOptions.FirstOrDefault(r => r.Id == selectedRoomId);
+
+                        Console.Write("New Name: ");
+                        selectedRoom.Name = Console.ReadLine();
+
+                        Console.Write("New Max Occupancy: ");
+                        selectedRoom.MaxOccupancy = int.Parse(Console.ReadLine());
+
+                        roomRepo.Update(selectedRoom);
+
+                        Console.WriteLine("Room has been successfully updated");
+                        Console.Write("Press any key to continue");
+                        Console.ReadKey();
+                        break;
+
+                    case ("Remove a room from renting"):
+                        List<Room> removeRoom = roomRepo.GetAll(); 
+                        foreach (Room rm in removeRoom)
+                        {
+                            Console.WriteLine($"{rm.Id} - {rm.Name}");
+                        }
+
+                        Console.WriteLine("Pick a room to remove:");
+                        int roomId = int.Parse(Console.ReadLine());
+
+                        // We dont want to remove a room that someone is renting at them moment...
+                        try
+                        {
+                            roomRepo.Delete(roomId);
+                        }
+                        catch
+                        {
+                            Console.WriteLine("Someone is renting the room. it cannot be removed, at this time");
+                            Console.Write("Press any key to continue");
+                            Console.ReadKey();
+                            break;
+                        }
+
+                        Console.WriteLine($"Room was successfully removed!"); 
+
                         Console.Write("Press any key to continue");
                         Console.ReadKey();
                         break;
@@ -167,6 +221,7 @@ namespace Roommates
                         Roommate roommate = roommateRepo.GetById(roommateId);
 
                         Console.WriteLine($"{roommate.Id} - {roommate.FirstName} pays {roommate.RentPortion}% of rent. They occupy {roommate.Room.Name}.");
+
                         Console.Write("Press any key to continue");
                         Console.ReadKey();
                         break;
