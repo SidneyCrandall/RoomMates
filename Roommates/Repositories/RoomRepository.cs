@@ -133,6 +133,8 @@ namespace Roommates.Repositories
                                          VALUES (@name, @maxOccupancy)";
                     cmd.Parameters.AddWithValue("@name", room.Name);
                     cmd.Parameters.AddWithValue("@maxOccupancy", room.MaxOccupancy);
+                    // returns to us the integer id. Captured the object put it in a variable
+                    // "fancy for simple integer"
                     int id = (int)cmd.ExecuteScalar();
 
                     room.Id = id;
@@ -159,7 +161,7 @@ namespace Roommates.Repositories
                     cmd.Parameters.AddWithValue("@name", room.Name);
                     cmd.Parameters.AddWithValue("@maxOccupancy", room.MaxOccupancy);
                     cmd.Parameters.AddWithValue("@id", room.Id);
-
+                    // We don't value back. Use for updata and delete
                     cmd.ExecuteNonQuery();
                 }
             }

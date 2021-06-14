@@ -9,54 +9,12 @@ namespace Roommates.Repositories
     ///  This class is responsible for interacting with RoomMate data.
     ///  It inherits from the BaseRepository class so that it can use the BaseRepository's Connection property
     /// </summary>
-    class RoommateRepository : BaseRepository
+    public class RoommateRepository : BaseRepository
     {
         /// <summary>
         ///  When new RoomRepository is instantiated, pass the connection string along to the BaseRepository
         /// </summary>
         public RoommateRepository(string connectionString) : base(connectionString) { }
-
-        public Roommate GetById(int id)
-        {
-            using (SqlConnection conn = Connection)
-            {
-                conn.Open();
-
-                using (SqlCommand cmd = conn.CreateCommand())
-                {
-                    cmd.CommandText = @"SELECT FirstName, LastName, RentPortion, Room.Name
-                                        FROM Roommate
-                                        JOIN Room on RoomId = room.Id";
-                    cmd.Parameters.AddWithValue("@id", id);
-
-                    SqlDataReader reader = cmd.ExecuteReader();
-
-                    Roommate roommate = null;
-
-                    if (reader.Read())
-                    {
-                        Room room = new Room
-                        {
-                            Name = reader.GetString(reader.GetOrdinal("Name")),
-                        };
-
-                        roommate = new Roommate
-                        {
-                            Id = id,
-                            FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
-                            LastName = reader.GetString(reader.GetOrdinal("LastName")),
-                            RentPortion = reader.GetInt32(reader.GetOrdinal("RentPortion")),
-                            MovedInDate = reader.GetDateTime(reader.GetOrdinal("MovedInDate")),
-                            Room = room,
-                        };
-                    }
-
-                    reader.Close();
-
-                    return roommate;
-                }
-            }
-        }
 
         public List<Roommate> GetAll()
         {
@@ -84,17 +42,78 @@ namespace Roommates.Repositories
 
                     while (reader.Read())
                     {
+                        // The "ordinal" is the numeric position of the column in the query results.
+                        //  For our query, "Id" has an ordinal value of 0 and "Name" is 1.
+                        int idColumnPosition = reader.GetOrdinal("Id");
+                        // We user the reader's GetXXX methods to get the value for a particular ordinal.
+                        int idValue = reader.GetInt32(idColumnPosition);
+
+                        int firstNameColumn = reader.GetOrdinal("FirstName");
+                        string firstNameValue = reader.GetString(firstNameColumn);
+
+                        int lastNameColumn = reader.GetOrdinal("LastName");
+                        string lastNameValue = reader.GetString(lastNameColumn);
+
+                        /*int rentColumn = reader.GetOrdinal("RentPorition");
+                        int rentValue = reader.GetInt32(rentColumn);
+
+                        int roomColumn = reader.GetOrdinal("RoomId");
+                        int room = reader.GetInt32(roomColumn);*/
+                       
                         roommate = new Roommate
                         {
                             Id = reader.GetInt32(reader.GetOrdinal("Id")),
                             FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
                             LastName = reader.GetString(reader.GetOrdinal("LastName")),
+
                         };
                         roommates.Add(roommate);
                     }
                     reader.Close();
 
                     return roommates;
+                }
+            }
+        }
+
+        public Roommate GetById(int id)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    // This is called before the execution.
+                    cmd.CommandText = @"SELECT FirstName, LastName, RentPortion, Room.Name
+                                        FROM Roommate
+                                        JOIN Room on RoomId = room.Id";
+                    cmd.Parameters.AddWithValue("@id", id);
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    // creating roommate variable setting it to null
+                    Roommate roommate = null;
+                    // if we find a roommate return true, if not give us the value of null
+                    if (reader.Read())
+                    { 
+                        roommate = new Roommate
+                        {
+                            Id = id,
+                            FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
+                            LastName = reader.GetString(reader.GetOrdinal("LastName")),
+                            RentPortion = reader.GetInt32(reader.GetOrdinal("RentPortion")),
+                            MovedInDate = reader.GetDateTime(reader.GetOrdinal("MovedInDate")),
+                            Room = new Room() { 
+                                Id = reader.GetInt32(reader.GetOrdinal("RoomId")),
+                                Name = reader.GetString(reader.GetOrdinal("Name")),
+                                MaxOccupancy = reader.GetInt32(reader.GetOrdinal("MaxOccupancy")),
+                            },
+                        };
+                    }
+
+                    reader.Close();
+
+                    return roommate;
                 }
             }
         }
