@@ -2,7 +2,7 @@
 using Roommates.Repositories;
 using System;
 using System.Collections.Generic;
-using.Linq;
+using System.Linq;
 
 namespace Roommates
 {
@@ -244,6 +244,8 @@ namespace Roommates
                 "Show all rooms",
                 "Search for room",
                 "Add a room",
+                "Update a room",
+                "Pick a room to remove",
                 // CHORES
                 "Show all chores",
                 "Search for a chore",
