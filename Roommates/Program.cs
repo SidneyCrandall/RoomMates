@@ -260,6 +260,18 @@ namespace Roommates
                         Console.ReadKey();
                         break;
 
+                    // Users want to know the count of chores
+                    /*case ("Get Chore Count"):
+                        List<ChoreCount> choreCount = choreRepo.GetChoreCount();
+                        foreach(ChoreCount count in choreCount)
+                        {
+                            Console.WriteLine($"{count.Name}: {count.countOfChores}");
+                        };
+
+                        Console.Write("Press any key to continue");
+                        Console.ReadKey();
+                        break;*/
+
                     // Get a RoomMate by Id
                     case ("Select a roommate"):
                         Console.Write("RoomMate Id: ");
@@ -302,6 +314,7 @@ namespace Roommates
                 "Delete a chore",
                 "Show all unassigned chores",
                 "Assign a chore",
+                "Get Chore Count",
                 // ROOMMATES
                 "Select a roommate",
                 "Exit"

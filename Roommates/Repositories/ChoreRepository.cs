@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Data.SqlClient;
 using Roommates.Models;
 using System.Collections.Generic;
@@ -140,7 +141,7 @@ namespace Roommates.Repositories
         }
 
         // Now lets Assign those chores
-        public void AssignChore(int roommateId, int choreId)
+        public void AssignChore(int roommate, int chore)
         {
             using (SqlConnection conn = Connection)
             {
@@ -148,12 +149,18 @@ namespace Roommates.Repositories
 
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
+                    // OUTPUT INSERTED.id needed to help from throwing an exception. 
+                    // the Roommates and the chores need to be connected in order for them to be assigned
                     cmd.CommandText = @"INSERT INTO RoommateChore (RoommateId, ChoreId)
+                                            OUTPUT INSERTED.id
                                             VALUES (@roommateId, @choreId)";
-                    cmd.Parameters.AddWithValue("@roommateId", roommateId);
-                    cmd.Parameters.AddWithValue("@choreId", choreId);
+                    cmd.Parameters.AddWithValue("@roommateId", roommate);
+                    cmd.Parameters.AddWithValue("@choreId", chore);
 
-                    cmd.ExecuteNonQuery();
+                    cmd.ExecuteScalar();
+
+                    int chorAssigned = (int)cmd.ExecuteScalar();
+
                 }
             }
         }
@@ -220,5 +227,43 @@ namespace Roommates.Repositories
                 }
             }
         }
+
+        // Method used to get the chore count
+       /* public List<ChoreCount> GetChoreCount()
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"SELECT COUNT(Chore.Name) as CountOfChores, Roommate.FirstName 
+                                        FROM Roommate 
+                                        LEFT JOIN RoommateChore on RoommateChore.RoommateId = Roommate.Id
+                                        LEFT JOIN Chore on CHore.Id = RoommateChore.ChoreId
+                                        GROUP BY Roommate.Id, Roommate.FirstName";
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    List<ChoreCount> counts = new List<ChoreCount>();
+
+                    while (reader.Read())
+                    {
+                        ChoreCount choreCount = new ChoreCount
+                        {
+                            Name = reader.GetString(reader.GetOrdinal("FirstName"))
+                            CountOfChores = reader.GetInt32(reader.GetOrdinal("CountOfChores"))
+                        };
+                        counts.Add(choreCount);
+                    }
+                    reader.Close();
+                    return choreCount;*/
+                }
+            }
+        }
     }
 }
+                      /*  int firstNameColumn = reader.GetOrdinal("FirstName");
+                        string firstName = reader.GetString(firstNameColumn);
+
+                        int choreCountColumn = reader.GetOrdinal("Count");
+                        int choresCounted = reader.GetInt32(choreCountColumn);*/

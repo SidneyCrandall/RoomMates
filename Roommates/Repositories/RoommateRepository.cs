@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 namespace Roommates.Repositories
 {
+    // Code comments that will briefly explain when hovered over
     /// <summary>
     ///  This class is responsible for interacting with RoomMate data.
     ///  It inherits from the BaseRepository class so that it can use the BaseRepository's Connection property
@@ -45,14 +46,16 @@ namespace Roommates.Repositories
                         // The "ordinal" is the numeric position of the column in the query results.
                         //  For our query, "Id" has an ordinal value of 0 and "Name" is 1.
                         int idColumnPosition = reader.GetOrdinal("Id");
-                        // We user the reader's GetXXX methods to get the value for a particular ordinal.
+                        // We use the reader's GetXXX methods to get the value for a particular ordinal.
                         int idValue = reader.GetInt32(idColumnPosition);
-
+                        // Since the value is a string we call a string after the Ordinal
                         int firstNameColumn = reader.GetOrdinal("FirstName");
                         string firstNameValue = reader.GetString(firstNameColumn);
 
                         int lastNameColumn = reader.GetOrdinal("LastName");
                         string lastNameValue = reader.GetString(lastNameColumn);
+                        // These are only needed if they are recalled aagin. 
+                        // An exception will be thrown
 
                         /*int rentColumn = reader.GetOrdinal("RentPorition");
                         int rentValue = reader.GetInt32(rentColumn);
@@ -69,8 +72,9 @@ namespace Roommates.Repositories
                         };
                         roommates.Add(roommate);
                     }
+                    // CLose the server after retrieving the data needed to get all the rooms
                     reader.Close();
-
+                    // show the user in the CLI the roommates when prompted
                     return roommates;
                 }
             }
@@ -103,6 +107,8 @@ namespace Roommates.Repositories
                             LastName = reader.GetString(reader.GetOrdinal("LastName")),
                             RentPortion = reader.GetInt32(reader.GetOrdinal("RentPortion")),
                             MovedInDate = reader.GetDateTime(reader.GetOrdinal("MovedInDate")),
+                            // We have to look at the roommate. Then we need to look at the value of the room. 
+                           // This will help users know whose room is who's.
                             Room = new Room() { 
                                 Id = reader.GetInt32(reader.GetOrdinal("RoomId")),
                                 Name = reader.GetString(reader.GetOrdinal("Name")),
@@ -110,9 +116,9 @@ namespace Roommates.Repositories
                             },
                         };
                     }
-
+                    // Close the server
                     reader.Close();
-
+                    // Tell us the roommates and rooms
                     return roommate;
                 }
             }
